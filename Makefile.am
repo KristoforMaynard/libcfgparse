@@ -5,6 +5,8 @@ lib_LIBRARIES = libcfgparse.a
 
 libcfgparse_a_SOURCES = cfgparse_util.c \
 			cfgparse_util.h \
+			cfgparse_arg.c \
+			cfgparse_arg.h \
 			cfgparselib.h
 
 test_parse_SOURCES = test_parse.c

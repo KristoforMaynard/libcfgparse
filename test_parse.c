@@ -29,7 +29,8 @@ int main(int argc, char **argv){
   cfgparseAddString(&cmd_group2, CFGP_MODE_STORE, 'D', "Dv", &D, "-4", "D h");
   cfgparseObjCreate(&cmdfileobj, "input.txt", 1, &cmd_group2);
   
-  cfgparseObjListCreate(&cmdobjlist, 2, &cmdobj, &cmdfileobj);
+  cfgparseObjListCreate(&cmdobjlist, "./test_parse", NULL, 
+                        2, &cmdobj, &cmdfileobj);
 
   fprintf(stderr, "a = %d\n", a);
   fprintf(stderr, "b = %g\n", b);
@@ -41,12 +42,16 @@ int main(int argc, char **argv){
   fprintf(stderr, "C = %g\n", C);
   fprintf(stderr, "D = %s\n", D);
 
-  cfgparsePrintHelp(&cmdobjlist);
+  cfgparseParse(&cmdobjlist);
   
   assert(a==-1);
   assert(b==-2.0);
   assert(c==-3.0);
   assert(d[0]=='-' && d[1]=='4');
+  assert(A==-1);
+  assert(B==-2.0);
+  assert(C==-3.0);
+  assert(D[0]=='-' && D[1]=='4');
 
   cfgparseObjListDestroy(&cmdobjlist);
 

@@ -4,6 +4,7 @@
 #include <stdarg.h>
 
 #include "cfgparse_util.h"
+#include "cfgparse_arg.h"
 
 void
 cfgparseGroupCreate(cfgparse_group_t *group, char *label){
@@ -34,7 +35,8 @@ cfgparseObjCreate(cfgparse_obj_t *obj, char *fname, int n, ...){
 }
 
 void
-cfgparseObjListCreate(cfgparse_objlist_t *objlst, int n, ...){
+cfgparseObjListCreate(cfgparse_objlist_t *objlst, char *prog, char *ver,
+                      int n, ...){
   int i;
   cfgparse_obj_t *obj;
   va_list ap;
@@ -42,6 +44,8 @@ cfgparseObjListCreate(cfgparse_objlist_t *objlst, int n, ...){
   assert(objlst->list == NULL);
   objlst->list = calloc(n, sizeof(cfgparse_objlist_t*));
   objlst->n = n;
+  objlst->prog = prog;
+  objlst->ver = ver;
 
   va_start(ap, n);
   for(i = 0; i < n; i++){
@@ -72,6 +76,7 @@ cfgparseObjDestroy(cfgparse_obj_t *obj){
     cfgparseGroupDestroy(obj->list[i]);
   }
   free(obj->list);
+  obj->list = NULL;
 }
 
 void
@@ -81,6 +86,7 @@ cfgparseObjListDestroy(cfgparse_objlist_t *objlst){
     cfgparseObjDestroy(objlst->list[i]);
   }
   free(objlst->list);  
+  objlst->list = NULL;
 }
 
 /* calloc a new node and append it to the list */
@@ -150,21 +156,18 @@ cfgparseAddString(cfgparse_group_t *group, int mode,
   *(char**)node->dest = def_val;
 }
 
-void
+/*void
 cfgparseAddComment(cfgparse_group_t *group, const char *comment){
-  cfgparse_node_t *node = cfgparseAddNode(group, CFGP_MODE_COMMENT, '\0',
+  cfgparse_node_t *node = cfgparseAddNode(group, CFGP_MODE_COMMENT, (char)0,
                                           NULL, NULL, comment);
   node->type = CFGP_TYPE_COMMENT;
+}*/
+
+
+void
+cfgparsePrintVersion(cfgparse_objlist_t *objlst){
+  fprintf(stderr, "Version: %s\n", objlst->ver);
 }
-
-
-/* Do the file processing once all variables have been added to list */
-/* returns 0 if config file was read                                 */
-/* returns 1 if config file was written and defaults are in use      */
-int cfgparseParseFile(cfgparse_group_t *group){return 1;}
-
-/* Print all the config variables to the screen with thier associated */
-/* help blurbs, if any are supplied                                   */
 
 void
 cfgparseObjPrintHelp(cfgparse_obj_t *obj){
@@ -198,10 +201,10 @@ cfgparseObjPrintHelp(cfgparse_obj_t *obj){
       }
 
       if(obj->fname == NULL){
-        fprintf(stderr, "    -%c  --%s = %s\t%s\n", curnode->key, 
+        fprintf(stderr, "    -%c, --%s=%s\t\t%s\n", curnode->key,
                 curnode->longkey, tp, curnode->help);
       } else{
-        fprintf(stderr, "    %s = %s\t%s\n", curnode->longkey, tp,
+        fprintf(stderr, "    %s = %s\t\t%s\n", curnode->longkey, tp,
                 curnode->help);
       }
       curnode = curnode->next;
@@ -214,11 +217,40 @@ cfgparsePrintHelp(cfgparse_objlist_t *objlst){
   int i;
   cfgparse_obj_t *curobj = NULL;
 
-  /*fprintf(stderr, "Usage: [options]\n");*/
+  fprintf(stderr, "Usage: %s [options]\n", objlst->prog);
   for(i = 0; i < objlst->n; i++){
     curobj = objlst->list[i];
     cfgparseObjPrintHelp(curobj);
   }
+}
+
+/* < 0 if something bad happend */
+/* 0 if everything went normally  */
+/* &2 if help should be printed    */
+/* &4 if version should be printed */
+int
+cfgparseParse(cfgparse_objlist_t *objlst){
+  int i;
+  int ret = 0;
+  cfgparse_obj_t *obj;
+
+  for(i = 0; i < objlst->n; i++){
+    obj = objlst->list[i];
+    if(obj->fname == NULL){
+      ret |= cfgparseCmdParse(obj);
+    } else{
+      /*ret |= cfgparseFileParse(obj);*/
+    }
+  }
+
+  if(ret > 0 && ret & 4){
+    cfgparsePrintVersion(objlst);
+  }
+  if(ret > 0 && ret & 2){
+    cfgparsePrintHelp(objlst);
+  }
+
+  return ret;
 }
 
 /*

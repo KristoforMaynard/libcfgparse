@@ -131,6 +131,6 @@ cfgparseFileParse(cfgparse_obj_t *obj){
 
 int
 cfgparseFileDump(cfgparse_obj_t *obj){
-  assert(0);
+  assert(0); /* not implemented */
 }
 

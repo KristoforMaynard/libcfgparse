@@ -266,10 +266,10 @@ cfgparseParse(cfgparse_objlist_t *objlst){
     }
   }
 
-  if(ret > 0 && ret & 4){
+  if(ret > 0 && ret & CFGP_MASK_VERSION){
     cfgparsePrintVersion(objlst);
   }
-  if(ret > 0 && ret & 2){
+  if(ret > 0 && ret & CFGP_MASK_HELP){
     cfgparsePrintHelp(objlst);
   }
 

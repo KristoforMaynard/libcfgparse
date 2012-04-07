@@ -19,8 +19,8 @@ int main(int argc, char **argv){
   char *d, *D;
 
   cfgparseGroupCreate(&cmd_group1, "General");
-  cfgparseAddFlag(&cmd_group1, 2, 'h', "help", "help");
-  cfgparseAddFlag(&cmd_group1, 4, 'V', "version", "version");  
+  cfgparseAddFlag(&cmd_group1, CFGP_MASK_HELP, 'h', "help", "help");
+  cfgparseAddFlag(&cmd_group1, CFGP_MASK_VERSION, 'V', "version", "version");  
   cfgparseGroupCreate(&cmd_group2, "");
   cfgparseAddInt(&cmd_group2, CFGP_MODE_STORE, 'a', "av", &a, -1, "a h");
   cfgparseAddFloat(&cmd_group2, CFGP_MODE_STORE, 'b', "bv", &b, -2.0, "b h");
@@ -35,7 +35,7 @@ int main(int argc, char **argv){
   cfgparseAddString(&cmd_group3, CFGP_MODE_STORE, 'D', "fD", &D, "-4", "D h");
   cfgparseObjCreate(&cmdfileobj, "intest.txt", NULL, NULL, 1, &cmd_group3);
   
-  cfgparseObjListCreate(&cmdobjlist, "./test_parse", "0.0", 
+  cfgparseObjListCreate(&cmdobjlist, "./test_parse", "0.01", 
                         2, &cmdobj, &cmdfileobj);
 
   ret = cfgparseParse(&cmdobjlist);

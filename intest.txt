@@ -1,9 +1,12 @@
 # Comment
-fA = 1 #comment
-fB=2.0
-asdf = #jello
-fC = 3.0 # asdf
+fA = 1 # <- this will work
+fB=2.0 # <- so should this
+asdf = # <- this should give an error
+fC = 3.0 # <- this is good again
+         # and evidently requires a long comment
 idk
 
-f = 32
-fD = with space #fdas
+ 
+f = 32 # <- this should not be found
+fD = with space
+

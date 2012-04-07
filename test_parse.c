@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <assert.h>
 #include "cfgparselib.h"
 
@@ -60,7 +61,7 @@ int main(int argc, char **argv){
   assert(A==1);
   assert(B==2.0);
   assert(C==3.0);
-  assert(D[0]=='+' && D[1]=='4');
+  assert(strncmp("with space", D, 12) == 0);
 
   cfgparseObjListDestroy(&cmdobjlist);
 

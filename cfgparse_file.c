@@ -7,17 +7,20 @@
 #include "cfgparse_file.h"
 
 /* this is not prototyped, only used in this file */
-void
+char*
 skip_whitespace(char *chr){
-  while(chr && chr != '\0' && (*chr == ' ' || *chr == '\t')){
-    chr += 1;
+  char *ret = chr;
+  while(ret && (*ret == ' ' || *ret == '\t' || *ret == '\n')){
+    ret += 1;
   }
+  return ret;
 }
 
 int
 cfgparseFileParse(cfgparse_obj_t *obj){
   FILE *f;
   char line[CFGP_LINE_LEN];
+  char *crawler;
   char *key;
   char *val;
   int vallen;
@@ -78,25 +81,19 @@ cfgparseFileParse(cfgparse_obj_t *obj){
     if(first_comment_char != NULL){
       *first_comment_char = '\0';
     }
-
-    skip_whitespace(line);
-    key = strtok(line, " =\t");
+    
+    crawler = skip_whitespace(line);
+    key = strtok(crawler, " =\t");
     if(key == NULL){
       /* the line was only whitespace and comments */
-      printf("empty line %d\n", iline);
       continue;
     }
-    val = strtok(NULL, "=");
-    while(val && *val != '\0' && (*val == ' ' || *val == '\t')){
-      val += 1;
-    }
+    val = strtok(NULL, "=\n");
+    val = skip_whitespace(val);
 
     found = 0;
     for(i = 0; i < nopts; i++){
-      /* look for matching key */
-      printf("looking for  %s  in  %s\n", nodearr[i]->longkey, key);
       if(strncmp(nodearr[i]->longkey, key, CFGP_LINE_LEN) == 0){
-        printf("found it\n");
         if(nodearr[i]->mode == CFGP_MODE_STORE){
           if(nodearr[i]->type == CFGP_TYPE_INT){
             sscanf(val, "%d", (int*)nodearr[i]->dest);

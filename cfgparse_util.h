@@ -6,7 +6,8 @@
 void 
 cfgparseGroupCreate(cfgparse_group_t *group, char *label);
 void
-cfgparseObjCreate(cfgparse_obj_t *obj, char *fname, int n, ...);
+cfgparseObjCreate(cfgparse_obj_t *obj, char *fname, int *argc, char ***argv,
+                  int n, ...);
 void
 cfgparseObjListCreate(cfgparse_objlist_t *objlst, char *prog, char *ver,
                       int n, ...);
@@ -19,26 +20,31 @@ void
 cfgparseObjListDestroy(cfgparse_objlist_t *objlst);
 
 cfgparse_node_t *
-cfgparseAddNode(cfgparse_group_t *group, int mode, 
+cfgparseAddNode(cfgparse_group_t *group, int mode,
                const char key, const char *longkey, void *dest, 
                const char *help);
 
 void
-cfgparseAddInt(cfgparse_group_t *group, int mode, 
+cfgparseAddInt(cfgparse_group_t *group, int mode,
                const char key, const char *longkey, int *dest, 
                int def_val, const char *help);
 void 
-cfgparseAddFloat(cfgparse_group_t *group, int mode, 
+cfgparseAddFloat(cfgparse_group_t *group, int mode,
                  const char key, const char *longkey, float *dest,
                  float def_val, const char *help);
 void
-cfgparseAddDouble(cfgparse_group_t *group, int mode, 
+cfgparseAddDouble(cfgparse_group_t *group, int mode,
                   const char key, const char *longkey, double *dest,
                   float def_val, const char *help);
 void
-cfgparseAddString(cfgparse_group_t *group, int mode, 
+cfgparseAddString(cfgparse_group_t *group, int mode,
                   const char key, const char *longkey, char **dest,
                   char *def_val, const char *help);
+
+void
+cfgparseAddFlag(cfgparse_group_t *group, int parse_mask,
+                  const char key, const char *longkey, const char *help);
+
 /*void
 cfgparseAddComment(cfgparse_group_t *group, const char *comment);*/
 

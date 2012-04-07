@@ -16,7 +16,8 @@ cfgparseGroupCreate(cfgparse_group_t *group, char *label){
 }
 
 void
-cfgparseObjCreate(cfgparse_obj_t *obj, char *fname, int n, ...){
+cfgparseObjCreate(cfgparse_obj_t *obj, char *fname, int *argc, char ***argv,
+                  int n, ...){
   int i;
   cfgparse_group_t *g;
   va_list ap;
@@ -25,6 +26,8 @@ cfgparseObjCreate(cfgparse_obj_t *obj, char *fname, int n, ...){
   obj->list = calloc(n, sizeof(cfgparse_group_t*));
   obj->n = n;
   obj->fname = fname;
+  obj->argc = argc;
+  obj->argv = argv;
 
   va_start(ap, n);
   for(i = 0; i < n; i++){
@@ -91,7 +94,7 @@ cfgparseObjListDestroy(cfgparse_objlist_t *objlst){
 
 /* calloc a new node and append it to the list */
 cfgparse_node_t *
-cfgparseAddNode(cfgparse_group_t *group, int mode, 
+cfgparseAddNode(cfgparse_group_t *group, int mode,
                const char key, const char *longkey, void *dest, 
                const char *help){
   cfgparse_node_t *node = calloc(1, sizeof(cfgparse_node_t));
@@ -108,6 +111,7 @@ cfgparseAddNode(cfgparse_group_t *group, int mode,
   group->n++;
 
   /* fill values from arguments */
+  node->parse_mask = CFGP_MASK_NONE;
   node->mode = mode;
   node->key = key;
   node->longkey = longkey;
@@ -117,43 +121,56 @@ cfgparseAddNode(cfgparse_group_t *group, int mode,
 }
 
 void
-cfgparseAddInt(cfgparse_group_t *group, int mode, 
+cfgparseAddInt(cfgparse_group_t *group, int mode,
                const char key, const char *longkey, int *dest, 
                int def_val, const char *help){
-  cfgparse_node_t *node = cfgparseAddNode(group, mode, key, longkey, 
+  cfgparse_node_t *node = cfgparseAddNode(group, mode,
+                                          key, longkey, 
                                           (void*)dest, help);
   node->type = CFGP_TYPE_INT;
   *(int*)node->dest = def_val;
 }
 
 void 
-cfgparseAddFloat(cfgparse_group_t *group, int mode, 
+cfgparseAddFloat(cfgparse_group_t *group, int mode,
                  const char key, const char *longkey, float *dest,
                  float def_val, const char *help){
-  cfgparse_node_t *node = cfgparseAddNode(group, mode, key, longkey, 
+  cfgparse_node_t *node = cfgparseAddNode(group, mode,
+                                          key, longkey, 
                                           (void*)dest, help);
   node->type = CFGP_TYPE_FLOAT;
   *(float*)node->dest = def_val;
 }
 
 void
-cfgparseAddDouble(cfgparse_group_t *group, int mode, 
+cfgparseAddDouble(cfgparse_group_t *group, int mode,
                   const char key, const char *longkey, double *dest,
                   float def_val, const char *help){
-  cfgparse_node_t *node = cfgparseAddNode(group, mode, key, longkey, 
+  cfgparse_node_t *node = cfgparseAddNode(group, mode,
+                                          key, longkey,
                                           (void*)dest, help);
   node->type = CFGP_TYPE_DOUBLE;
   *(double*)node->dest = def_val;
 }
 
 void
-cfgparseAddString(cfgparse_group_t *group, int mode, 
+cfgparseAddString(cfgparse_group_t *group, int mode,
                   const char key, const char *longkey, char **dest,
                   char *def_val, const char *help){
-  cfgparse_node_t *node = cfgparseAddNode(group, mode, key, longkey, 
+  cfgparse_node_t *node = cfgparseAddNode(group, mode,
+                                          key, longkey,
                                           (void*)dest, help);
   node->type = CFGP_TYPE_STRING;
   *(char**)node->dest = def_val;
+}
+
+void
+cfgparseAddFlag(cfgparse_group_t *group, int parse_mask,
+                  const char key, const char *longkey, const char *help){
+  cfgparse_node_t *node = cfgparseAddNode(group, CFGP_MODE_FLAG, 
+                                          key, longkey, NULL, help);
+  node->type = CFGP_TYPE_INT;
+  node->parse_mask = parse_mask;
 }
 
 /*void
@@ -172,13 +189,12 @@ cfgparsePrintVersion(cfgparse_objlist_t *objlst){
 void
 cfgparseObjPrintHelp(cfgparse_obj_t *obj){
   int i;
-  char *tp;
+  char *tp = "         ";
   cfgparse_group_t *curgroup = NULL;
   cfgparse_node_t *curnode = NULL;
   
   if(obj->fname == NULL){
-    fprintf(stderr, "Usage: [options]\n");
-    fprintf(stderr, "\nOPTIONS:\n");
+    fprintf(stderr, "\nCOMMAND LINE OPTIONS:\n");
   } else{
     fprintf(stderr, "\nFILE: %s\n", obj->fname);
   }
@@ -192,19 +208,21 @@ cfgparseObjPrintHelp(cfgparse_obj_t *obj){
 
     curnode = curgroup->first;
     while(curnode != NULL){
-      switch(curnode->type){
-      case CFGP_TYPE_INT:     tp="INT   ";  break;
-      case CFGP_TYPE_FLOAT:   tp="FLOAT ";  break;
-      case CFGP_TYPE_DOUBLE:  tp="DOUBLE";  break;
-      case CFGP_TYPE_STRING:  tp="STRING";  break;
-      default: continue;
+      if(curnode->mode == CFGP_MODE_STORE){
+        switch(curnode->type){
+        case CFGP_TYPE_INT:     tp=" = INT   ";  break;
+        case CFGP_TYPE_FLOAT:   tp=" = FLOAT ";  break;
+        case CFGP_TYPE_DOUBLE:  tp=" = DOUBLE";  break;
+        case CFGP_TYPE_STRING:  tp=" = STRING";  break;
+        default: continue;
+        }
       }
 
       if(obj->fname == NULL){
-        fprintf(stderr, "    -%c, --%s=%s\t\t%s\n", curnode->key,
+        fprintf(stderr, "    -%c, --%-15s %s    %s\n", curnode->key,
                 curnode->longkey, tp, curnode->help);
       } else{
-        fprintf(stderr, "    %s = %s\t\t%s\n", curnode->longkey, tp,
+        fprintf(stderr, "    %-20s %s    %s\n", curnode->longkey, tp,
                 curnode->help);
       }
       curnode = curnode->next;

@@ -1,28 +1,36 @@
 #ifndef __CFGPARSELIB_H
 #define __CFGPARSELIB_H
 
+#define CFGP_COMMENT_CHAR '#'
+#define CFGP_COMMENT_STR  "#"
 
 enum cfgp_node_type {
   CFGP_TYPE_INT,
   CFGP_TYPE_FLOAT,
   CFGP_TYPE_DOUBLE,
-  CFGP_TYPE_STRING/*,
-  CFGP_TYPE_COMMENT*/
+  CFGP_TYPE_STRING,
+  CFGP_TYPE_COMMENT
 };
 
 enum cfgp_mode {
   CFGP_MODE_STORE,
-  CFGP_MODE_COMMENT
+  CFGP_MODE_STORE_TRUE,
+  CFGP_MODE_STORE_FALSE,
+  CFGP_MODE_FLAG,
+  CFGP_MODE_INCREMENT,
+  CFGP_MODE_DECREMENT
 };
 
-//enum cfgp_list_type {
-  //CFGP_CFG_ARGS,
-  //CFGP_CFG_FILE
-//};
+enum cfgp_mask{
+  CFGP_MASK_NONE = 0,
+  CFGP_MASK_HELP = 2,
+  CFGP_MASK_VERSION = 4
+};
 
 struct cfgparse_node{
   enum cfgp_node_type type;
   enum cfgp_mode mode;
+  enum cfgp_mask parse_mask;
   char key;
   const char *longkey;
   void *dest;
@@ -42,7 +50,9 @@ typedef struct cfgparse_group{
 
 
 typedef struct cfgparse_obj{
-  char *fname;
+  char *fname; /* for reading files */
+  int *argc;   /* for command line args */
+  char ***argv; /* for command line args */
   int n;
   cfgparse_group_t **list;
 } cfgparse_obj_t;

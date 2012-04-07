@@ -1,17 +1,15 @@
 ACLOCAL_AMFLAGS = -I m4
 
-bin_PROGRAMS = test_argparse.c test_fileparse.c
+bin_PROGRAMS = test_parse
 lib_LIBRARIES = libcfgparse.a
 
-libkdv_a_SOURCES = configparse.c \
-		   configparse.h \
-		   fileparse.c \
-		   fileparse.h \
-		   cfgparselib.h
+libcfgparse_a_SOURCES = cfgparse_util.c \
+			cfgparse_util.h \
+			cfgparselib.h
 
-test_argparse_SOURCES = test_argparse.c
+test_parse_SOURCES = test_parse.c
 
-test_fileparse_SOURCES = test_fileparse.c
+LDADD = libcfgparse.a
 
 TESTS = $(bin_PROGRAMS)
 

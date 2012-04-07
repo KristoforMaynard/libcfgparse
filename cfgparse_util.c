@@ -194,7 +194,7 @@ cfgparsePrintVersion(cfgparse_objlist_t *objlst){
 void
 cfgparseObjPrintHelp(cfgparse_obj_t *obj){
   int i;
-  char *tp = "         ";
+  char *tp;
   cfgparse_group_t *curgroup = NULL;
   cfgparse_node_t *curnode = NULL;
   
@@ -213,6 +213,7 @@ cfgparseObjPrintHelp(cfgparse_obj_t *obj){
 
     curnode = curgroup->first;
     while(curnode != NULL){
+      tp = "         ";
       if(curnode->mode == CFGP_MODE_STORE){
         switch(curnode->type){
         case CFGP_TYPE_INT:     tp=" = INT   ";  break;
@@ -224,8 +225,13 @@ cfgparseObjPrintHelp(cfgparse_obj_t *obj){
       }
 
       if(obj->fname == NULL){
-        fprintf(stderr, "    -%c, --%-15s %s    %s\n", curnode->key,
-                curnode->longkey, tp, curnode->help);
+        if(curnode->longkey != NULL){
+          fprintf(stderr, "    -%c, --%-15s %s    %s\n", curnode->key,
+                  curnode->longkey, tp, curnode->help);
+        } else{
+          fprintf(stderr, "    -%-20c %s    %s\n", curnode->key,
+                  tp, curnode->help);          
+        }
       } else{
         fprintf(stderr, "    %-20s %s    %s\n", curnode->longkey, tp,
                 curnode->help);

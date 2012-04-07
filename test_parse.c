@@ -28,11 +28,11 @@ int main(int argc, char **argv){
   cfgparseObjCreate(&cmdobj, NULL, &argc, &argv, 2, &cmd_group1, &cmd_group2);
 
   cfgparseGroupCreate(&cmd_group3, NULL);
-  cfgparseAddInt(&cmd_group3, CFGP_MODE_STORE, 'A', "Av", &A, -1, "A h");
-  cfgparseAddFloat(&cmd_group3, CFGP_MODE_STORE, 'B', "Bv", &B, -2.0, "B h");
-  cfgparseAddDouble(&cmd_group3, CFGP_MODE_STORE, 'C', "Cv", &C, -3.0, "C h");
-  cfgparseAddString(&cmd_group3, CFGP_MODE_STORE, 'D', "Dv", &D, "-4", "D h");
-  cfgparseObjCreate(&cmdfileobj, "input.txt", NULL, NULL, 1, &cmd_group3);
+  cfgparseAddInt(&cmd_group3, CFGP_MODE_STORE, 'A', "fA", &A, -1, "A h");
+  cfgparseAddFloat(&cmd_group3, CFGP_MODE_STORE, 'B', "fB", &B, -2.0, "B h");
+  cfgparseAddDouble(&cmd_group3, CFGP_MODE_STORE, 'C', "fC", &C, -3.0, "C h");
+  cfgparseAddString(&cmd_group3, CFGP_MODE_STORE, 'D', "fD", &D, "-4", "D h");
+  cfgparseObjCreate(&cmdfileobj, "intest.txt", NULL, NULL, 1, &cmd_group3);
   
   cfgparseObjListCreate(&cmdobjlist, "./test_parse", "0.0", 
                         2, &cmdobj, &cmdfileobj);
@@ -57,10 +57,10 @@ int main(int argc, char **argv){
   assert(b==-2.0);
   assert(c==-3.0);
   assert(d[0]=='-' && d[1]=='4');
-  assert(A==-1);
-  assert(B==-2.0);
-  assert(C==-3.0);
-  assert(D[0]=='-' && D[1]=='4');
+  assert(A==1);
+  assert(B==2.0);
+  assert(C==3.0);
+  assert(D[0]=='+' && D[1]=='4');
 
   cfgparseObjListDestroy(&cmdobjlist);
 

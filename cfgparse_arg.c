@@ -12,7 +12,7 @@ cfgparseCmdParse(cfgparse_obj_t *obj){
   int inode, iopt, ilongopt;
   int nopts = 0;
   int nlongopts = 0;
-  int ret = 0;
+  int ret = CFGP_MASK_NONE;
   char *optchars;
   struct option *longopts;
   int c;
@@ -75,6 +75,10 @@ cfgparseCmdParse(cfgparse_obj_t *obj){
       curnode = curnode->next;
     }
   }
+  longopts[ilongopt].name = NULL;
+  longopts[ilongopt].flag = NULL;
+  longopts[ilongopt].has_arg = 0;
+  longopts[ilongopt].val = 0;
 
   /* now do the actual parsing */
   while((c = getopt_long(*obj->argc, *obj->argv, optchars, 
@@ -82,14 +86,16 @@ cfgparseCmdParse(cfgparse_obj_t *obj){
     for(i = 0; i < nopts; i++){
       if(c == nodearr[i]->key){
         if(nodearr[i]->mode == CFGP_MODE_STORE){
-          if(nodearr[i]->type == CFGP_TYPE_INT)
+          if(nodearr[i]->type == CFGP_TYPE_INT){
             sscanf(optarg, "%d", (int*)nodearr[i]->dest);
-          else if(nodearr[i]->type == CFGP_TYPE_FLOAT)
+          }else if(nodearr[i]->type == CFGP_TYPE_FLOAT){
             sscanf(optarg, "%g", (float*)nodearr[i]->dest);
-          else if(nodearr[i]->type == CFGP_TYPE_DOUBLE)
+          }else if(nodearr[i]->type == CFGP_TYPE_DOUBLE){
             sscanf(optarg, "%lg", (double*)nodearr[i]->dest);
-          else if(nodearr[i]->type == CFGP_TYPE_STRING)
+          }else if(nodearr[i]->type == CFGP_TYPE_STRING){
+            /* strings are special */
             *(char**)(nodearr[i]->dest) = optarg;
+          }
         } else if (nodearr[i]->mode == CFGP_MODE_STORE_TRUE){
           assert(nodearr[i]->type == CFGP_TYPE_INT);
           *(int*)nodearr[i]->dest = !0;

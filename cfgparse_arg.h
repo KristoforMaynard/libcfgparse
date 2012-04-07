@@ -1,5 +1,5 @@
-#ifndef __ARGPARSE_H
-#define __ARGPARSE_H
+#ifndef __CFGPARSE_ARG_H
+#define __CFGPARSE_ARG_H
 
 #include "cfgparselib.h"
 

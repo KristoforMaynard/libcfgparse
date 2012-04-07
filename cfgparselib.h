@@ -1,6 +1,8 @@
 #ifndef __CFGPARSELIB_H
 #define __CFGPARSELIB_H
 
+#define CFGP_LINE_LEN  120
+
 #define CFGP_COMMENT_CHAR '#'
 #define CFGP_COMMENT_STR  "#"
 
@@ -31,6 +33,7 @@ struct cfgparse_node{
   enum cfgp_node_type type;
   enum cfgp_mode mode;
   enum cfgp_mask parse_mask;
+  int dest_alloced;
   char key;
   const char *longkey;
   void *dest;

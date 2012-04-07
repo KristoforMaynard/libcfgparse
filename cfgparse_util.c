@@ -5,6 +5,7 @@
 
 #include "cfgparse_util.h"
 #include "cfgparse_arg.h"
+#include "cfgparse_file.h"
 
 void
 cfgparseGroupCreate(cfgparse_group_t *group, char *label){
@@ -65,6 +66,9 @@ cfgparseGroupDestroy(cfgparse_group_t *group){
   while(group->n > 0){
     cur = nxt;
     nxt = cur->next;
+    if(cur->dest_alloced){
+      free(cur->dest);
+    }
     free(cur);
     group->n--;
   }
@@ -117,6 +121,7 @@ cfgparseAddNode(cfgparse_group_t *group, int mode,
   node->longkey = longkey;
   node->dest = dest;
   node->help = help;
+  node->dest_alloced = 0;
   return node;
 }
 
@@ -257,7 +262,7 @@ cfgparseParse(cfgparse_objlist_t *objlst){
     if(obj->fname == NULL){
       ret |= cfgparseCmdParse(obj);
     } else{
-      /*ret |= cfgparseFileParse(obj);*/
+      ret |= cfgparseFileParse(obj);
     }
   }
 

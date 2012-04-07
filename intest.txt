@@ -1,0 +1,9 @@
+# Comment
+fA = 1 #comment
+fB=2.0
+asdf = #jello
+fC = 3.0 # asdf
+idk
+
+f = 32
+fD = with space #fdas

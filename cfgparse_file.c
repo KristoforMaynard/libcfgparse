@@ -35,9 +35,14 @@ cfgparseFileParse(cfgparse_obj_t *obj){
   cfgparse_node_t *curnode;
   cfgparse_node_t **nodearr;
 
+  assert(obj != NULL);
+
   /* how many options are we going to have? */
   for(i = 0; i < obj->n; i++){
     curgroup = obj->list[i];
+    if(curgroup == NULL){
+      continue;
+    }
     curnode = curgroup->first;
     while(curnode != NULL){
       if(curnode->type != CFGP_TYPE_COMMENT){
@@ -56,6 +61,9 @@ cfgparseFileParse(cfgparse_obj_t *obj){
   inode = 0;
   for(i = 0; i < obj->n; i++){
     curgroup = obj->list[i];
+    if(curgroup == NULL){
+      continue;
+    }
     curnode = curgroup->first;
     while(curnode != NULL){
       if(curnode->type != CFGP_TYPE_COMMENT){

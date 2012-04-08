@@ -20,12 +20,17 @@ cfgparseCmdParse(cfgparse_obj_t *obj){
   cfgparse_node_t *curnode;
   cfgparse_node_t **nodearr;
 
+  assert(obj != NULL);
+
   /* how many options are we going to have? */
   for(i = 0; i < obj->n; i++){
     curgroup = obj->list[i];
+    if(curgroup == NULL){
+      continue;
+    }
     curnode = curgroup->first;
     while(curnode != NULL){
-      if(curnode->type != CFGP_TYPE_COMMENT){
+      if(curnode->type != CFGP_TYPE_COMMENT && curnode->key != '\0'){
         if(curnode->longkey != NULL){
           nlongopts += 1;
         }
@@ -46,9 +51,12 @@ cfgparseCmdParse(cfgparse_obj_t *obj){
   ilongopt = 0;
   for(i = 0; i < obj->n; i++){
     curgroup = obj->list[i];
+    if(curgroup == NULL){
+      continue;
+    }
     curnode = curgroup->first;
     while(curnode != NULL){
-      if(curnode->type != CFGP_TYPE_COMMENT){
+      if(curnode->type != CFGP_TYPE_COMMENT && curnode->key != '\0'){
         nodearr[inode] = curnode;
         /* append longkey array if necessary */
         if(curnode->longkey != NULL){
@@ -81,6 +89,8 @@ cfgparseCmdParse(cfgparse_obj_t *obj){
   longopts[ilongopt].val = 0;
 
   /* now do the actual parsing */
+  assert(obj->argv != NULL);
+  assert(obj->argc != NULL);
   while((c = getopt_long(*obj->argc, *obj->argv, optchars, 
          longopts, NULL)) != -1){
     for(i = 0; i < nopts; i++){

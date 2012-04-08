@@ -102,6 +102,7 @@ cfgparseAddNode(cfgparse_group_t *group, int mode,
                const char key, const char *longkey, void *dest, 
                const char *help){
   cfgparse_node_t *node = calloc(1, sizeof(cfgparse_node_t));
+  assert(group != NULL);
   assert(node != NULL);
   /* add node to the list */
   node->prev = group->last;
@@ -188,6 +189,7 @@ cfgparseAddComment(cfgparse_group_t *group, const char *comment){
 
 void
 cfgparsePrintVersion(cfgparse_objlist_t *objlst){
+  assert(objlst != NULL);
   fprintf(stderr, "Version: %s\n", objlst->ver);
 }
 
@@ -197,6 +199,8 @@ cfgparseObjPrintHelp(cfgparse_obj_t *obj){
   char *tp;
   cfgparse_group_t *curgroup = NULL;
   cfgparse_node_t *curnode = NULL;
+
+  assert(obj != NULL);
   
   if(obj->fname == NULL){
     fprintf(stderr, "\nCOMMAND LINE OPTIONS:\n");
@@ -246,6 +250,8 @@ cfgparsePrintHelp(cfgparse_objlist_t *objlst){
   int i;
   cfgparse_obj_t *curobj = NULL;
 
+  assert(objlst != NULL);
+
   fprintf(stderr, "Usage: %s [options]\n", objlst->prog);
   for(i = 0; i < objlst->n; i++){
     curobj = objlst->list[i];
@@ -263,8 +269,11 @@ cfgparseParse(cfgparse_objlist_t *objlst){
   int ret = 0;
   cfgparse_obj_t *obj;
 
+  assert(objlst != NULL);
+
   for(i = 0; i < objlst->n; i++){
     obj = objlst->list[i];
+    assert(obj != NULL);
     if(obj->fname == NULL){
       ret |= cfgparseCmdParse(obj);
     } else{

@@ -9,6 +9,8 @@ interface.
 Here is an example how to use it:
 
 <pre><code>int main(int argc, char **argv){
+  /* all of these must be initialized to {0} or the init routines
+   * won't be happy at all. */
   cfgparse_group_t cmd_group1 = {0};
   cfgparse_group_t cmd_group2 = {0};
   cfgparse_obj_t cmdobj = {0};

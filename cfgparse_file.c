@@ -81,6 +81,11 @@ cfgparseFileParse(cfgparse_obj_t *obj){
 
   /* parse the file */
   f = fopen(obj->fname, "r");
+  if (f == NULL){
+    fprintf(stderr, "cfgparse Warning: problem opening %s\n", obj->fname);
+    return -1;  
+  }
+
   iline = 0;
   while(fgets(line, CFGP_LINE_LEN, f)){
     iline++;

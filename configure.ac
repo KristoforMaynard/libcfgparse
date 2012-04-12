@@ -3,8 +3,12 @@
 
 AC_PREREQ(2.61)
 AC_INIT([libcfgparse], [0.01])
+AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([-Wall foreign])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+AC_CONFIG_MACRO_DIR([m4])
+
+LT_INIT([disable-shared])
 
 # Checks for programs.
 AC_PROG_CC([gcc cc])
@@ -13,7 +17,6 @@ if test -z "$CC" || test "X$CC" = "Xno"; then
   AC_MSG_ERROR([No suitable C99 compiler found])
 fi
 AM_PROG_CC_C_O
-AC_PROG_RANLIB
 
 # add -Wall if possible
 AX_CHECK_COMPILER_FLAGS([-Wall], [CFLAGS="$CFLAGS -Wall"])

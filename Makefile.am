@@ -1,19 +1,19 @@
 ACLOCAL_AMFLAGS = -I m4
 
 bin_PROGRAMS = test_parse
-lib_LIBRARIES = libcfgparse.a
+pkglib_LTLIBRARIES = libcfgparse.la
 
-libcfgparse_a_SOURCES = cfgparse_util.c \
-			cfgparse_util.h \
+libcfgparse_la_SOURCES = cfgparse_util.c \
 			cfgparse_arg.c \
-			cfgparse_arg.h \
-			cfgparse_file.c \
-			cfgparse_file.h \
-			cfgparselib.h
+			cfgparse_file.c
+			
+pkginclude_HEADERS = cfgparse_util.h \
+		     cfgparse_arg.h \
+		     cfgparse_file.h \
+		     cfgparselib.h
 
 test_parse_SOURCES = test_parse.c
-
-LDADD = libcfgparse.a
+test_parse_LDADD = libcfgparse.la
 
 TESTS = $(bin_PROGRAMS)
 

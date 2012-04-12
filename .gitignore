@@ -3,7 +3,10 @@ lib*.a
 *~
 .DS_Store
 *.o
+*.lo
 *.a
+*.la
+*.lai
 *.dSYM
 
 .deps
@@ -15,11 +18,20 @@ config.h
 config.h.in
 config.log
 config.status
+config.sub
+config.guess
 configure
 depcomp
 install-sh
 missing
 stamp-h1
+libtool
+ltoptions.m4
+ltsugar.m4
+ltversion.m4
+lt~obsolete.m4
+libtool.m4
+ltmain.sh
 Makefile
 
 test_parse

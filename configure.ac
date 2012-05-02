@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.61)
-AC_INIT([libcfgparse], [0.01])
+AC_INIT([libcfgparse], [0.10])
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([-Wall foreign])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -32,13 +32,6 @@ AC_ARG_ENABLE(debug,
   [debug=true]) 
  
 AS_IF([test "$debug" = "false"], [CPPFLAGS="${CPPFLAGS} -DNDEBUG"]) 
-
-AC_PROG_F77
-if test -z "$F77" || test "X$F77" = "Xno"; then
-  AC_MSG_ERROR([No suitable F77 compiler found])
-fi
-
-AC_F77_WRAPPERS 
 
 AC_CONFIG_HEADERS([config.h])
 
